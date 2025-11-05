@@ -34,7 +34,7 @@ def spectra_to_smiles(pos_low_file, pos_high_file, neg_low_file, neg_high_file,
         num_variants: Number of SMILES variants to generate
     """
     
-    print("Step 1: Converting spectra to embeddings...")
+    print("Converting spectra to embeddings")
     
     # Create args object for predict_embs
     class Args:
@@ -148,34 +148,28 @@ def calculate_adme_properties(smiles):
         return None
 
 
-def analyze_predictions_with_adme(predictions_csv, output_json):
+def analyze_predictions_with_adme(predictions_csv, output_file):
     """
     Read Spec2Mol predictions CSV and add ADME properties to each SMILES
     
     Args:
         predictions_csv: Path to CSV from Spec2Mol (output of decode_embeddings)
-        output_json: Path to save JSON with ADME properties
+        output_file: Path to save results (CSV or XLSX based on extension)
         
     Returns:
-        List of dictionaries with SMILES and their ADME properties
+        DataFrame with all results
     """
     import pandas as pd
-    import json
     
     # Read predictions
     df = pd.read_csv(predictions_csv)
     
-    results = []
+    all_results = []
     
     # Process each row
     for idx, row in df.iterrows():
-        smiles_with_precursor = row['smiles_with_precursor']
+        spectrum_id = row['smiles_with_precursor']
         predicted_smiles_list = row['predicted_smiles_list'].split('|')
-        
-        entry = {
-            'spectrum_id': smiles_with_precursor,
-            'predictions': []
-        }
         
         # Calculate ADME for each predicted variant
         for i, smiles in enumerate(predicted_smiles_list):
@@ -183,42 +177,68 @@ def analyze_predictions_with_adme(predictions_csv, output_json):
             
             adme_props = calculate_adme_properties(smiles)
             
-            prediction_entry = {
-                'smiles': smiles,
-                'variant_number': i + 1,
-                'valid': adme_props is not None,
-                'adme_properties': adme_props
-            }
+            if adme_props is not None:
+                result_row = {
+                    'spectrum_id': spectrum_id,
+                    'smiles': smiles,
+                    'variant': i + 1,
+                    'valid': True,
+                    
+                    # Druglikeness
+                    'lipinski_pass': adme_props['lipinski_pass'],
+                    'lipinski_violations': str(adme_props['lipinski_violations']),
+                    'egan_pass': adme_props['egan_pass'],
+                    'ghose_pass': adme_props['ghose_pass'],
+                    'muegge_pass': adme_props['muegge_pass'],
+                    'veber_pass': adme_props['veber_pass'],
+                    
+                    # Pharmacokinetics
+                    'gi_absorption': adme_props['gi_absorption'],
+                    'bbb_permeant': adme_props['bbb_permeant'],
+                    
+                    # Medicinal Chemistry
+                    'pains_alert': adme_props['pains_alert'],
+                    'brenk_alert': adme_props['brenk_alert'],
+                    
+                    # Molecular Properties
+                    'molecular_weight': round(adme_props['molecular_weight'], 2),
+                    'logp': round(adme_props['logp'], 2),
+                    'tpsa': round(adme_props['tpsa'], 2),
+                    'h_bond_donors': adme_props['h_bond_donors'],
+                    'h_bond_acceptors': adme_props['h_bond_acceptors'],
+                    'n_rotatable_bonds': adme_props['n_rotatable_bonds'],
+                    'n_atoms': adme_props['n_atoms'],
+                    'n_rings': adme_props['n_rings'],
+                }
+            else:
+                result_row = {
+                    'spectrum_id': spectrum_id,
+                    'smiles': smiles,
+                    'variant': i + 1,
+                    'valid': False,
+                    'lipinski_pass': None,
+                    'lipinski_violations': 'Invalid SMILES',
+                }
             
-            entry['predictions'].append(prediction_entry)
-        
-        results.append(entry)
-        print(f"Processed spectrum {idx + 1}/{len(df)}: {len(predicted_smiles_list)} variants")
+            all_results.append(result_row)
     
-    # Save to JSON
-    with open(output_json, 'w') as f:
-        json.dump(results, f, indent=2)
+    # Create DataFrame
+    results_df = pd.DataFrame(all_results)
     
-    print(f"\n✓ ADME analysis complete! Saved to {output_json}")
+    # Save to file
+    if output_file.endswith('.xlsx'):
+        results_df.to_excel(output_file, index=False, engine='openpyxl')
+    else:
+        results_df.to_csv(output_file, index=False)
     
-    # Print summary statistics
-    total_predictions = sum(len(entry['predictions']) for entry in results)
-    valid_predictions = sum(
-        sum(1 for p in entry['predictions'] if p['valid']) 
-        for entry in results
-    )
-    druglike_lipinski = sum(
-        sum(1 for p in entry['predictions'] 
-            if p['valid'] and p['adme_properties']['lipinski_pass']) 
-        for entry in results
-    )
+    print(f"✓ Results saved to {output_file}")
+    print(f"  Total predictions: {len(results_df)}")
+    print(f"  Valid SMILES: {results_df['valid'].sum()}")
+    if results_df['valid'].sum() > 0:
+        lipinski_compliant = results_df[results_df['valid']]['lipinski_pass'].sum()
+        print(f"  Lipinski compliant: {lipinski_compliant}")
     
-    print(f"\nSummary:")
-    print(f"  Total predictions: {total_predictions}")
-    print(f"  Valid SMILES: {valid_predictions}")
-    print(f"  Lipinski compliant: {druglike_lipinski} ({druglike_lipinski/valid_predictions*100:.1f}%)")
-    
-    return results
+    return results_df
 
 ############################# end of ADME ######################################################
 
@@ -251,8 +271,8 @@ if __name__ == '__main__':
     parser.add_argument('--num_variants', type=int, default=10,
                         help='Number of SMILES variants to generate')
     
-    parser.add_argument('--adme_output', type=str, default='predictions_with_adme.json',
-                        help='Output JSON file with ADME properties')
+    parser.add_argument('--adme_output', type=str, default='results.csv',
+                        help='Output file with ADME properties (CSV or XLSX)')
     parser.add_argument('--skip_adme', action='store_true',
                         help='Skip ADME analysis')
     
