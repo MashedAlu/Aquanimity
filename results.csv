@@ -1,0 +1,11 @@
+spectrum_id,smiles,variant,valid,lipinski_pass,lipinski_violations,egan_pass,ghose_pass,muegge_pass,veber_pass,gi_absorption,bbb_permeant,pains_alert,brenk_alert,molecular_weight,logp,tpsa,h_bond_donors,h_bond_acceptors,n_rotatable_bonds,n_atoms,n_rings
+spectrum_1,CNc1cc(NC=O)c2nc1n(C)cccc12,1,False,,Invalid SMILES,,,,,,,,,,,,,,,,
+spectrum_1,C(Cc1cccc2c(=O)[nH]c(c(NC(C)C)nn12,2,False,,Invalid SMILES,,,,,,,,,,,,,,,,
+spectrum_1,COc1ccc2c(NCCc3ccccc3)n[nH]c2c1=O,3,False,,Invalid SMILES,,,,,,,,,,,,,,,,
+spectrum_1,CNc1ccc2c(n1)c(CC)nc(NC(C)=O)c2[O-],4,True,True,No violations found,True,False,True,True,High,No,False,False,259.12,1.27,89.97,2.0,5.0,3.0,19.0,2.0
+spectrum_1,COc1ccc2[nH]c(N)nc2c1CCC1=OCN1,5,False,,Invalid SMILES,,,,,,,,,,,,,,,,
+spectrum_1,CCc1cc([N+]#N)c2nc(NCc3ccccc3)n(C)c2[nH]1,6,False,,Invalid SMILES,,,,,,,,,,,,,,,,
+spectrum_1,CCNc1cc(-c2cccnc2)c2nc(C)[nH]c2c1,7,True,True,No violations found,True,False,True,True,High,Yes,False,False,252.14,3.37,53.6,2.0,3.0,3.0,19.0,3.0
+spectrum_1,CNc1ccc(OCF)c2nc(-c3ccccc3)n(C)c12,8,True,True,No violations found,True,True,True,True,High,Yes,True,False,285.13,3.59,39.08,1.0,4.0,4.0,21.0,3.0
+spectrum_1,CCc1cc2nc(NC3CC3)n(C)c(=O)c2cc1)c1,9,False,,Invalid SMILES,,,,,,,,,,,,,,,,
+spectrum_1,COc1ccc2nc(NCCC)c(=O)[nH]c2c1,10,True,True,No violations found,True,False,True,True,High,Yes,False,False,233.12,1.75,67.01,2.0,4.0,4.0,17.0,2.0

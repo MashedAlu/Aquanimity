@@ -3,13 +3,15 @@ import argparse
 import torch
 import sys
 import os
-import json  # ADD THIS LINE
+import json
+import pandas as pd
+import dockstring
+from dockstring import load_target, list_all_target_names
 
 # Import existing modules
 from predict_embs import main as predict_embeddings
 sys.path.insert(0, 'decoder')
 from decode_embeddings import main as decode_embeddings, get_parser as get_decode_parser
-from models_storage import ModelsStorage
 
 def spectra_to_smiles(pos_low_file, pos_high_file, neg_low_file, neg_high_file, 
                       encoder_model='spectra_encoder.pt',
@@ -73,7 +75,7 @@ def spectra_to_smiles(pos_low_file, pos_high_file, neg_low_file, neg_high_file,
     # Decode embeddings to SMILES
     decode_embeddings(config.model, config)
     
-    print(f"\n✓ Done! Predicted SMILES saved to {output_file}")
+    print(f"\n Done! Predicted SMILES saved to {output_file}")
     print(f"  Generated {num_variants} variants per spectrum")
     
     # Clean up temp file
@@ -159,7 +161,6 @@ def analyze_predictions_with_adme(predictions_csv, output_file):
     Returns:
         DataFrame with all results
     """
-    import pandas as pd
     
     # Read predictions
     df = pd.read_csv(predictions_csv)
@@ -231,7 +232,7 @@ def analyze_predictions_with_adme(predictions_csv, output_file):
     else:
         results_df.to_csv(output_file, index=False)
     
-    print(f"✓ Results saved to {output_file}")
+    print(f"  Results saved to {output_file}")
     print(f"  Total predictions: {len(results_df)}")
     print(f"  Valid SMILES: {results_df['valid'].sum()}")
     if results_df['valid'].sum() > 0:
@@ -241,6 +242,113 @@ def analyze_predictions_with_adme(predictions_csv, output_file):
     return results_df
 
 ############################# end of ADME ######################################################
+
+################################ Start of Docking ###################################################
+
+def perform_molecular_docking(adme_results_file, output_file='docking_results.csv'):
+    """
+    Perform molecular docking on valid SMILES from ADME analysis
+    
+    Args:
+        adme_results_file: Path to CSV with ADME results
+        output_file: Path to save docking results
+    """
+    # Read ADME results and filter valid SMILES
+    df = pd.read_csv(adme_results_file)
+    valid_smiles = df[df['valid'] == True]['smiles'].unique().tolist()
+    
+    if len(valid_smiles) == 0:
+        print("No valid SMILES found for docking.")
+        return None
+    
+    print(f"\nFound {len(valid_smiles)} valid SMILES for docking")
+    
+    # Ask user if they want to dock
+    dock_choice = input("\nWould you like to perform molecular docking? (y/n): ").strip().lower()
+    if dock_choice != 'y':
+        print("Skipping molecular docking.")
+        return None
+    
+    # List available targets
+    all_targets = list_all_target_names()
+    print("\nAvailable protein targets:")
+    for i, target in enumerate(all_targets, 1):
+        print(f"{i}. {target}")
+    
+    # Get user selection
+    target_input = input("\nEnter target numbers (comma-separated, e.g., 1,5,12): ").strip()
+    try:
+        target_indices = [int(x.strip()) - 1 for x in target_input.split(',')]
+        selected_targets = [all_targets[i] for i in target_indices]
+    except (ValueError, IndexError):
+        print("Invalid input. Skipping docking.")
+        return None
+    
+    print(f"\nSelected targets: {', '.join(selected_targets)}")
+    print(f"Starting docking for {len(valid_smiles)} SMILES against {len(selected_targets)} targets...")
+    
+    # Perform docking
+    docking_results = []
+    total_ops = len(valid_smiles) * len(selected_targets)
+    completed = 0
+    
+    for target_name in selected_targets:
+        target = load_target(target_name)
+        
+        for smiles in valid_smiles:
+            completed += 1
+            progress = (completed / total_ops) * 100
+            print(f"Progress: {progress:.1f}% - Docking {smiles[:30]}... against {target_name}")
+            
+            try:
+                score, info = target.dock(smiles)
+                
+                if score is not None:
+                    result = {
+                        'smiles': smiles,
+                        'target_name': target_name,
+                        'docking_score': round(score, 2),
+                        'affinity_list': str(info.get('affinities', [])),
+                        'num_conformers': info.get('ligand').GetNumConformers() if 'ligand' in info else 0,
+                        'docking_status': 'success'
+                    }
+                else:
+                    result = {
+                        'smiles': smiles,
+                        'target_name': target_name,
+                        'docking_score': None,
+                        'affinity_list': None,
+                        'num_conformers': 0,
+                        'docking_status': 'failed: no pose found'
+                    }
+            except Exception as e:
+                result = {
+                    'smiles': smiles,
+                    'target_name': target_name,
+                    'docking_score': None,
+                    'affinity_list': None,
+                    'num_conformers': 0,
+                    'docking_status': f'failed: {str(e)[:500]}'
+                }
+            
+            docking_results.append(result)
+    
+    # Save results
+    results_df = pd.DataFrame(docking_results)
+    results_df.to_csv(output_file, index=False)
+    
+    print(f"\n✓ Docking complete! Results saved to {output_file}")
+    
+    # Summary
+    success_count = results_df[results_df['docking_status'] == 'success'].shape[0]
+    print(f"\nSummary:")
+    print(f"  Total docking attempts: {len(results_df)}")
+    print(f"  Successful: {success_count}")
+    print(f"  Failed: {len(results_df) - success_count}")
+    
+    return results_df
+
+################################# End of Docking ####################################################
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Convert MS/MS spectra to SMILES')
@@ -276,6 +384,12 @@ if __name__ == '__main__':
     parser.add_argument('--skip_adme', action='store_true',
                         help='Skip ADME analysis')
     
+    # Docking options
+    parser.add_argument('--docking_output', type=str, default='docking_results.csv',
+                        help='Output file for docking results')
+    parser.add_argument('--skip_docking', action='store_true',
+                        help='Skip molecular docking')
+    
     args = parser.parse_args()
     
     # Run Spec2Mol
@@ -298,3 +412,10 @@ if __name__ == '__main__':
         print("Running ADME Analysis...")
         print("="*60 + "\n")
         analyze_predictions_with_adme(predictions_csv, args.adme_output)
+    
+            # Add docking step
+    if not args.skip_docking:
+        print("\n" + "="*60)
+        print("Molecular Docking")
+        print("="*60)
+        perform_molecular_docking(args.adme_output, args.docking_output)
