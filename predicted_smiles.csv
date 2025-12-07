@@ -1,0 +1,2 @@
+smiles_with_precursor,predicted_smiles_list
+spectrum_1,CNc1ccc2[nH]c(=O)n(C)c2c1CCC1CC1|COc1ccc2c(NC(=O)c3ccccc3)n[nH]c2cn1|COc1cc2nc(-c3ccccc3)nc2c(NC=O)[nH]1|CNc1cc(N2CCC1)cnc1[nH]c(=O)c(C)nc12|CNc1ccc2[nH]c(=O)c(C(C)C)nc12|COc1ccc2[nH]c(Nc3cccnc3)c(C)c2nc1=O|CNc1ccc(=O)c(C)n1)cc(N2CCOCC1)n2|COc1ccc([N+](=O)[O-])c2nc(NC3CC3)ccc12|CNc1ccc2c(n1)c(NCc1cccnc1)[nH]c(=O)c2C|CNc1ccc2nc(-c3ccccc3)n(C)c2c1CC
