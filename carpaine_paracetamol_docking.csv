@@ -1,0 +1,7 @@
+smiles,target_name,docking_score,affinity_list,num_conformers,pdb_file,docking_status
+C[C@H]1[C@@H]2CC[C@H](N1)CCCCCCCC(=O)O[C@H]3CC[C@@H](CCCCCCCC(=O)O2)N[C@H]3C,PPARG,-7.9,"[-7.9, -7.8, -7.8, -7.6, -7.4, -7.4, -7.3, -7.3, -7.3]",9,docking_poses/PPARG_C[C@H]1[C@@H]2CC[C@H](N1)CCCCC_complex.pdb,success
+CC(=O)Nc1ccc(cc1)O,PPARG,-6.2,"[-6.2, -5.9, -5.9, -5.5, -5.5, -5.4, -5.3, -5.3, -5.2]",9,docking_poses/PPARG_CC(=O)Nc1ccc(cc1)O_complex.pdb,success
+C[C@H]1[C@@H]2CC[C@H](N1)CCCCCCCC(=O)O[C@H]3CC[C@@H](CCCCCCCC(=O)O2)N[C@H]3C,PTGS2,-8.3,"[-8.3, -7.8, -7.7, -7.3, -7.3, -7.3, -7.1, -7.0, -7.0]",9,docking_poses/PTGS2_C[C@H]1[C@@H]2CC[C@H](N1)CCCCC_complex.pdb,success
+CC(=O)Nc1ccc(cc1)O,PTGS2,-6.3,"[-6.3, -6.2, -6.0, -5.9, -5.8, -5.7, -5.6, -5.6, -5.6]",9,docking_poses/PTGS2_CC(=O)Nc1ccc(cc1)O_complex.pdb,success
+C[C@H]1[C@@H]2CC[C@H](N1)CCCCCCCC(=O)O[C@H]3CC[C@@H](CCCCCCCC(=O)O2)N[C@H]3C,DPP4,-9.9,"[-9.9, -9.5, -9.4, -9.3, -8.9, -8.7, -8.4, -8.3, -8.2]",9,docking_poses/DPP4_C[C@H]1[C@@H]2CC[C@H](N1)CCCCC_complex.pdb,success
+CC(=O)Nc1ccc(cc1)O,DPP4,-5.3,"[-5.3, -5.3, -5.3, -5.2, -5.0, -4.8, -4.7, -4.7, -4.7]",9,docking_poses/DPP4_CC(=O)Nc1ccc(cc1)O_complex.pdb,success

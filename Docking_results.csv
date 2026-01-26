@@ -1,0 +1,7 @@
+smiles,target_name,docking_score,affinity_list,num_conformers,docking_status,pdb_file
+COc1ccc(C2=Nc3nc(N)n(C)c3)cc2[nH]1,CASP3,,,0,failed: Generation of ligand conformation failed,
+CNc1ccc2nc(-c3ccccc3)n(C)c2c1CC=N,CASP3,,,0,failed: Could not assign bond orders: No matching found,
+CNc1ccc2nc(-c3ccccc3)c(NC#N)n2c1,CASP3,-6.0,"[-6.0, -5.8, -5.8, -5.7, -5.6, -5.6, -5.5, -5.5, -5.5]",9,success,docking_poses/CASP3_CNc1ccc2nc(-c3ccccc3)c(NC#N)n2_complex.pdb
+COc1ccc2nc(NCc3ccccc3)c(=O)[nH]c2c1,CASP3,-7.1,"[-7.1, -6.9, -6.9, -6.9, -6.6, -6.6, -6.5, -6.5, -6.4]",9,success,docking_poses/CASP3_COc1ccc2nc(NCc3ccccc3)c(=O)[nH_complex.pdb
+CNc1ccc2nc(NCc3ccccc3)c([nH]n2C)c1,CASP3,,,0,failed: Generation of ligand conformation failed,
+CNc1ccc2c(n1)c(-c1ccccc1)nc[n+]2CC,CASP3,-6.7,"[-6.7, -6.4, -6.1, -6.0, -5.8, -5.8, -5.8, -5.8, -5.8]",9,success,docking_poses/CASP3_CNc1ccc2c(n1)c(-c1ccccc1)nc[n+_complex.pdb

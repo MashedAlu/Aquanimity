@@ -1,13 +1,2 @@
-smiles,target_name,docking_score,affinity_list,num_conformers,docking_status
-CNc1ccc2[nH]c(=O)n(C)c2c1CCC1CC1,KIT,-6.5,"[-6.5, -6.2, -6.1, -6.1, -6.1, -5.5, -5.3, -5.3, -5.2]",9,success
-COc1cc2nc(-c3ccccc3)nc2c(NC=O)[nH]1,KIT,-8.6,"[-8.6, -7.8, -7.7, -7.5, -7.3, -7.1, -6.6, -6.2, -6.1]",9,success
-COc1ccc2[nH]c(Nc3cccnc3)c(C)c2nc1=O,KIT,-7.0,"[-7.0, -6.6, -6.6, -6.6, -6.4, -6.1, -5.9, -5.9, -5.8]",9,success
-COc1ccc([N+](=O)[O-])c2nc(NC3CC3)ccc12,KIT,-6.6,"[-6.6, -6.4, -6.1, -6.1, -5.8, -5.7, -5.6, -5.4, -5.2]",9,success
-CNc1ccc2c(n1)c(NCc1cccnc1)[nH]c(=O)c2C,KIT,-7.8,"[-7.8, -7.2, -7.2, -7.2, -6.8, -6.8, -6.7, -6.3, -6.2]",9,success
-CNc1ccc2nc(-c3ccccc3)n(C)c2c1CC,KIT,-7.9,"[-7.9, -7.7, -7.6, -7.2, -7.1, -7.0, -7.0, -6.7, -6.7]",9,success
-CNc1ccc2[nH]c(=O)n(C)c2c1CCC1CC1,CASP3,-5.8,"[-5.8, -5.8, -5.6, -5.6, -5.6, -5.6, -5.6, -5.5, -5.5]",9,success
-COc1cc2nc(-c3ccccc3)nc2c(NC=O)[nH]1,CASP3,-7.0,"[-7.0, -6.8, -6.7, -6.7, -6.7, -6.5, -6.5, -6.4, -6.3]",9,success
-COc1ccc2[nH]c(Nc3cccnc3)c(C)c2nc1=O,CASP3,-6.6,"[-6.6, -6.5, -6.4, -6.4, -6.3, -6.2, -6.2, -6.2, -6.1]",9,success
-COc1ccc([N+](=O)[O-])c2nc(NC3CC3)ccc12,CASP3,-6.5,"[-6.5, -5.9, -5.8, -5.8, -5.7, -5.5, -5.3, -5.3, -5.3]",9,success
-CNc1ccc2c(n1)c(NCc1cccnc1)[nH]c(=O)c2C,CASP3,-7.2,"[-7.2, -7.2, -6.9, -6.6, -6.5, -6.5, -6.4, -6.4, -6.4]",9,success
-CNc1ccc2nc(-c3ccccc3)n(C)c2c1CC,CASP3,-6.7,"[-6.7, -6.6, -6.6, -6.5, -6.5, -6.4, -6.4, -6.3, -6.2]",9,success
+smiles,target_name,docking_score,affinity_list,num_conformers,pdb_file,docking_status
+CNc1ccc(C(=O)N2CCC2)c2nc(N)ncc12,NR3C1,-7.2,"[-7.2, -7.2, -7.0, -6.9, -6.8, -6.7, -6.7, -6.7, -6.7]",9,docking_poses/NR3C1_CNc1ccc(C(=O)N2CCC2)c2nc(N)ncc_pose.pdb,success
